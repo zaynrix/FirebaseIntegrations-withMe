@@ -33,7 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     auth.authStateChanges().listen((event) {
-      if (auth.currentUser == null) {
+      if (event == null) {
         setState(() {});
         isLogin = false;
       } else {
@@ -44,14 +44,35 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
   }
 
+  // User? user = FirebaseAuth.instance.currentUser;
   UserCredential? ress;
   login() async {
-    res = await auth.signInWithEmailAndPassword(
-        email: "yahya@gmail.com", password: "123456789");
+    try {
+      res = await auth.signInWithEmailAndPassword(
+          email: "yahya.m.abunada@gmail.com", password: "123456789");
 
-    setState(() {});
-    ress = res;
-    print("This user ${ress!.user!.email}");
+      setState(() {});
+      ress = res;
+      // if (user!.emailVerified) {
+      //   await user!.sendEmailVerification();
+      // }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+// User not found by Firebase
+        debugPrint(e.code);
+      } else if (e.code == 'wrong-password') {
+        debugPrint(e.code);
+
+// Incorrect password
+      }
+    }
+  }
+
+  User? user = FirebaseAuth.instance.currentUser;
+  sendEmail() async {
+    if (!user!.emailVerified) {
+      await user!.sendEmailVerification();
+    }
   }
 
   logout() {
@@ -70,14 +91,21 @@ class _MyHomePageState extends State<MyHomePage> {
             login();
             // auth.signInWithCredential();
           },
-          child: Text("LOGIN ${ress}"),
+          child: Text("LOGIN $ress"),
         ),
         TextButton(
           onPressed: () {
             logout();
             // auth.signInWithCredential();
           },
-          child: Text("LOGOUT "),
+          child: const Text("LOGOUT "),
+        ),
+        TextButton(
+          onPressed: () {
+            sendEmail();
+            // auth.signInWithCredential();
+          },
+          child: const Text("Send Verifications"),
         ),
         Text("Hello ${auth.currentUser?.email} $isLogin"),
       ],
