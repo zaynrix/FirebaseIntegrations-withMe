@@ -28,7 +28,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   FirebaseAuth auth = FirebaseAuth.instance;
-  var res;
+  User? user = FirebaseAuth.instance.currentUser;
+  UserCredential? userCredential;
   bool isLogin = false;
 
   @override
@@ -41,19 +42,13 @@ class _MyHomePageState extends State<MyHomePage> {
         isLogin = true;
       }
     });
-    // TODO: implement initState
     super.initState();
   }
 
-  UserCredential? ress;
-
   login() async {
     try {
-      res = await auth.signInWithEmailAndPassword(
+      userCredential = await auth.signInWithEmailAndPassword(
           email: "yahya.m.abunada@gmail.com", password: "123456789");
-
-      setState(() {});
-      ress = res;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         debugPrint(e.code);
@@ -63,8 +58,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  User? user = FirebaseAuth.instance.currentUser;
-
   sendEmail() async {
     if (!user!.emailVerified) {
       await user!.sendEmailVerification();
@@ -73,38 +66,36 @@ class _MyHomePageState extends State<MyHomePage> {
 
   logout() {
     auth.signOut();
-    ress = null;
+    userCredential = null;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        TextButton(
-          onPressed: () {
-            login();
-            // auth.signInWithCredential();
-          },
-          child: Text("LOGIN $ress"),
-        ),
-        TextButton(
-          onPressed: () {
-            logout();
-            // auth.signInWithCredential();
-          },
-          child: const Text("LOGOUT "),
-        ),
-        TextButton(
-          onPressed: () {
-            sendEmail();
-            // auth.signInWithCredential();
-          },
-          child: const Text("Send Verifications"),
-        ),
-        Text("Hello ${auth.currentUser?.email} $isLogin"),
-      ],
-    ));
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          TextButton(
+            onPressed: () {
+              login();
+            },
+            child: Text("LOGIN $userCredential"),
+          ),
+          TextButton(
+            onPressed: () {
+              logout();
+            },
+            child: const Text("LOGOUT "),
+          ),
+          TextButton(
+            onPressed: () {
+              sendEmail();
+            },
+            child: const Text("Send Verifications"),
+          ),
+          Text("Hello ${auth.currentUser?.email} $isLogin"),
+        ],
+      ),
+    );
   }
 }
