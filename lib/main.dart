@@ -75,11 +75,6 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Badge.count(
-            count: 4,
-            isLabelVisible: true,
-            child: const Icon(Icons.notifications),
-          ),
           TextButton(
             onPressed: () {
               login();
