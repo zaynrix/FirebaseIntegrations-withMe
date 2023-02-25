@@ -30,6 +30,7 @@ class _MyHomePageState extends State<MyHomePage> {
   FirebaseAuth auth = FirebaseAuth.instance;
   var res;
   bool isLogin = false;
+
   @override
   void initState() {
     auth.authStateChanges().listen((event) {
@@ -44,8 +45,8 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
   }
 
-  // User? user = FirebaseAuth.instance.currentUser;
   UserCredential? ress;
+
   login() async {
     try {
       res = await auth.signInWithEmailAndPassword(
@@ -53,22 +54,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
       setState(() {});
       ress = res;
-      // if (user!.emailVerified) {
-      //   await user!.sendEmailVerification();
-      // }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-// User not found by Firebase
         debugPrint(e.code);
       } else if (e.code == 'wrong-password') {
         debugPrint(e.code);
-
-// Incorrect password
       }
     }
   }
 
   User? user = FirebaseAuth.instance.currentUser;
+
   sendEmail() async {
     if (!user!.emailVerified) {
       await user!.sendEmailVerification();
