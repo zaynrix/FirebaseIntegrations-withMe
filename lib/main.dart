@@ -31,6 +31,9 @@ class _MyHomePageState extends State<MyHomePage> {
   User? user = FirebaseAuth.instance.currentUser;
   UserCredential? userCredential;
   bool isLogin = false;
+  final formKey = GlobalKey<FormState>();
+  TextEditingController email = TextEditingController();
+  TextEditingController password = TextEditingController();
 
   @override
   void initState() {
@@ -47,8 +50,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   login() async {
     try {
+      print("In log;");
+      //yahya.m.abunada@gmail.com
+      //123456789
       userCredential = await auth.signInWithEmailAndPassword(
-          email: "yahya.m.abunada@gmail.com", password: "123456789");
+          email: email.text, password: password.text);
+      setState(() {});
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         debugPrint(e.code);
@@ -72,29 +79,70 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          TextButton(
-            onPressed: () {
-              login();
-            },
-            child: Text("LOGIN $userCredential"),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Form(
+          key: formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextFormField(
+                controller: email,
+                decoration: const InputDecoration(hintText: "Email"),
+                validator: (value) {
+                  if (value!.isNotEmpty) {
+                    return null;
+                  } else {
+                    return "Write your Email";
+                  }
+                },
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              TextFormField(
+                controller: password,
+                decoration: const InputDecoration(hintText: "Password"),
+                validator: (value) {
+                  if (value!.isNotEmpty) {
+                    return null;
+                  } else {
+                    return "Write Password";
+                  }
+                },
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              TextButton(
+                onPressed: () {
+                  if (formKey.currentState!.validate()) {
+                    print("Validate");
+                    login();
+                  }
+                },
+                child: const Text("Login"),
+              ),
+              TextButton(
+                onPressed: () {
+                  logout();
+                },
+                child: const Text("LOGOUT"),
+              ),
+              TextButton(
+                onPressed: () {
+                  sendEmail();
+                },
+                child: const Text("Send Verifications Code"),
+              ),
+              Text("Is LoggedIn $isLogin"),
+              const SizedBox(
+                height: 20,
+              ),
+              Text("Hello ${auth.currentUser?.email}"),
+            ],
           ),
-          TextButton(
-            onPressed: () {
-              logout();
-            },
-            child: const Text("LOGOUT "),
-          ),
-          TextButton(
-            onPressed: () {
-              sendEmail();
-            },
-            child: const Text("Send Verifications"),
-          ),
-          Text("Hello ${auth.currentUser?.email} $isLogin"),
-        ],
+        ),
       ),
     );
   }
