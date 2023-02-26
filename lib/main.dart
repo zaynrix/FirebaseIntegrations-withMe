@@ -50,7 +50,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   login() async {
     try {
-      print("In log;");
       //yahya.m.abunada@gmail.com
       //123456789
       userCredential = await auth.signInWithEmailAndPassword(
